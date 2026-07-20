@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
-using TMPro; // Добавлено для TextMeshPro
+using TMPro;
 
 public class CharacterSelector : MonoBehaviour
 {
     [Header("UI Ссылки")]
-    public TextMeshProUGUI classText; // Изменено на TextMeshProUGUI
+    public TextMeshProUGUI classText;
     public Button btnLeft;
     public Button btnRight;
 
@@ -37,20 +37,22 @@ public class CharacterSelector : MonoBehaviour
         ApplyClass(currentIndex);
     }
 
-    void GoLeft()
+    // ✅ PUBLIC - чтобы кнопки видели эти методы в On Click
+    public void GoLeft()
     {
         currentIndex--;
         if (currentIndex < 0) currentIndex = classNames.Length - 1;
-        
+
         // Синхронизируем выбор со всеми игроками
         photonView.RPC("RPC_UpdateClass", RpcTarget.All, currentIndex);
     }
 
-    void GoRight()
+    // ✅ PUBLIC - чтобы кнопки видели эти методы в On Click
+    public void GoRight()
     {
         currentIndex++;
         if (currentIndex >= classNames.Length) currentIndex = 0;
-        
+
         // Синхронизируем выбор со всеми игроками
         photonView.RPC("RPC_UpdateClass", RpcTarget.All, currentIndex);
     }
