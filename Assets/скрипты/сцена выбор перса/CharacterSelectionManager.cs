@@ -36,7 +36,7 @@ public class CharacterSelectionManager : MonoBehaviourPunCallbacks
     void Start()
     {
         // Подключаемся к Photon если еще не подключены
-        if (!PhotonNetwork.IsConnected && !PhotonNetwork.IsConnecting)
+        if (!PhotonNetwork.IsConnected)
         {
             PhotonNetwork.ConnectUsingSettings();
         }
