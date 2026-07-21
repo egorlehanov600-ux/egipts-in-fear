@@ -13,15 +13,27 @@ public class RoomManager : MonoBehaviourPunCallbacks
     void Start()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
-        
         playerSpawned = new bool[playerSlots.Length];
         
-        // Просто подключаемся. OnConnectedToMaster() сам вызовется когда будет готово.
-        Debug.Log(" Подключение к Photon...");
-        PhotonNetwork.ConnectUsingSettings();
+        // Проверяем точное состояние подключения
+        if (PhotonNetwork.IsConnected && PhotonNetwork.Server == ServerConnection.MasterServer)
+        {
+            Debug.Log("✅ Уже на Master Server. Ищем комнату...");
+            PhotonNetwork.JoinRandomRoom();
+        }
+        else if (PhotonNetwork.IsConnected)
+        {
+            // Подключен, но ещё не на Master Server (NameServer или GameServer)
+            Debug.Log("⏳ Подключен, но ещё не на Master Server. Ждём...");
+            // Ничего не делаем, ждём OnConnectedToMaster()
+        }
+        else
+        {
+            Debug.Log("🔌 Подключение к Photon...");
+            PhotonNetwork.ConnectUsingSettings();
+        }
     }
 
-    // Вызывается когда клиент ГОТОВ к матчмейкингу (на Master Server)
     public override void OnConnectedToMaster()
     {
         Debug.Log("✅ Подключено к Master Server. Ищем комнату...");
@@ -51,12 +63,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public override void OnCreatedRoom()
     {
-        Debug.Log("🏠 Комната создана!");
+        Debug.Log(" Комната создана!");
     }
 
     public override void OnJoinedRoom()
     {
-        Debug.Log(" Игрок в комнате! Всего: " + PhotonNetwork.CurrentRoom.PlayerCount + "/5");
+        Debug.Log("👤 Игрок в комнате! Всего: " + PhotonNetwork.CurrentRoom.PlayerCount + "/5");
         UpdateRoomUI();
     }
 
@@ -101,7 +113,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
             Vector3 spawnPos = playerSlots[slotIndex].position;
             GameObject newPlayer = PhotonNetwork.Instantiate("PlayerCapsule", spawnPos, Quaternion.identity);
             
-            Debug.Log($" Игрок {player.NickName} заспавнился в слоте {slotIndex + 1}");
+            Debug.Log($"📍 Игрок {player.NickName} заспавнился в слоте {slotIndex + 1}");
         }
     }
 

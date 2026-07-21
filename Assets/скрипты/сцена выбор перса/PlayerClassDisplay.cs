@@ -10,20 +10,20 @@ public class PlayerClassDisplay : MonoBehaviourPun
     public Color[] classColors = { Color.red, Color.green, Color.blue };
 
     [Header("UI для отображения имени класса")]
-    public TextMeshPro classNameText; // 3D текст над капсулой
+    public TextMeshPro classNameText; // 3D текст над головой
+
+    private Renderer characterRenderer;
+
+    void Awake()
+    {
+        // Автоматически ищем рендерер модели (даже если он на дочернем объекте)
+        characterRenderer = GetComponentInChildren<Renderer>();
+    }
 
     void Start()
     {
-        if (photonView.IsMine)
-        {
-            // Для локального игрока читаем из своих свойств
-            ApplyClassFromProperties(PhotonNetwork.LocalPlayer);
-        }
-        else
-        {
-            // Для чужих игроков читаем из их свойств
-            ApplyClassFromProperties(photonView.Owner);
-        }
+        Photon.Realtime.Player targetPlayer = photonView.IsMine ? PhotonNetwork.LocalPlayer : photonView.Owner;
+        ApplyClassFromProperties(targetPlayer);
     }
 
     void ApplyClassFromProperties(Photon.Realtime.Player player)
@@ -32,20 +32,17 @@ public class PlayerClassDisplay : MonoBehaviourPun
         {
             int classIndex = (int)player.CustomProperties["selectedClass"];
             
-            // Красим капсулу
-            Renderer rend = GetComponent<Renderer>();
-            if (rend != null && classIndex < classColors.Length)
+            // 1. Красим модель персонажа
+            if (characterRenderer != null && classIndex < classColors.Length)
             {
-                rend.material.color = classColors[classIndex];
+                characterRenderer.material.color = classColors[classIndex];
             }
 
-            // Показываем имя класса над капсулой
+            // 2. Показываем имя класса над головой
             if (classNameText != null && classIndex < classNames.Length)
             {
                 classNameText.text = $"{classNames[classIndex]}\n({classRoles[classIndex]})";
             }
-
-            Debug.Log($"Игрок {player.NickName}: {classNames[classIndex]} ({classRoles[classIndex]})");
         }
     }
 }
