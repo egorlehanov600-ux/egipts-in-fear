@@ -1,8 +1,4 @@
 ﻿<Solution>
-<<<<<<< HEAD
-  <Project Path="Assembly-CSharp.csproj" />
-  <Project Path="Assembly-CSharp-Editor.csproj" />
-=======
   <Project Path="Unity.RenderPipelines.GPUDriven.Runtime.csproj" />
   <Project Path="Unity.ShaderGraph.Editor.csproj" />
   <Project Path="Unity.RenderPipelines.Core.Runtime.csproj" />
@@ -54,5 +50,4 @@
   <Project Path="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.csproj" />
   <Project Path="Unity.RenderPipelines.Core.ShaderLibrary.csproj" />
   <Project Path="PhotonUnityNetworking.Utilities.Culling.Editor.csproj" />
->>>>>>> 3393a058d46b523de815b6770b2f65e2f326c2f3
 </Solution>
