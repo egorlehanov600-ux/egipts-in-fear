@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections;
+using Photon.Pun; // ✅ Добавлено для работы с Photon
 
-public class CubeChoiceAction : MonoBehaviour
+public class CubeChoiceAction : MonoBehaviourPunCallbacks // ✅ Изменено на MonoBehaviourPunCallbacks
 {
     [Header("📦 Ссылки на объекты")]
     public Transform playerTransform;       // Игрок
@@ -18,7 +19,7 @@ public class CubeChoiceAction : MonoBehaviour
     public float playerEndX = 1.073f;
     public float playerMoveXDuration = 2f;
 
-    [Header(" 3. Поворот Игрока (по Y)")]
+    [Header("🔄 3. Поворот Игрока (по Y)")]
     public float playerTargetRotationY = -90f;
     public float playerRotateDuration = 1f;
 
@@ -30,25 +31,35 @@ public class CubeChoiceAction : MonoBehaviour
     public float guardFollowSpeed = 3f;
     public float guardDistanceBehind = 2f;
 
+    [Header("🌐 5. Мультиплеер и переход")]
+    public string nextSceneName = "LobbyScene"; // ✅ Имя сцены с ячейками (проверь в Build Settings!)
+
     private bool isSequenceActive = false;
 
     void OnMouseDown()
     {
         if (isSequenceActive) return;
         isSequenceActive = true;
+        
+        // ✅ Гарантируем, что мы подключены к Photon перед переходом
+        if (!PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.ConnectUsingSettings();
+        }
+        
         StartCoroutine(PlayCinematicSequence());
     }
 
     IEnumerator PlayCinematicSequence()
     {
-        // ✅ ЭТАП 1: Поднимаем ВОРОТА (а не куб!)
+        // ✅ ЭТАП 1: Поднимаем ВОРОТА
         if (gatesTransform != null)
         {
             yield return StartCoroutine(SmoothMoveY(gatesTransform, gatesStartY, gatesEndY, gatesDuration));
         }
         else
         {
-            Debug.LogWarning("️ Gates Transform не назначен! Пропускаем поднятие ворот.");
+            Debug.LogWarning("⚠️ Gates Transform не назначен! Пропускаем поднятие ворот.");
             yield return new WaitForSeconds(gatesDuration);
         }
 
@@ -78,6 +89,24 @@ public class CubeChoiceAction : MonoBehaviour
             {
                 guardScript.StopFollowing();
             }
+        }
+
+        // ✅ ЭТАП 6: Переход в мультиплеерное лобби
+        yield return new WaitForSeconds(1f); // Небольшая пауза для плавности
+        
+        Debug.Log("🔄 Переход в сцену: " + nextSceneName);
+        
+        // Включаем автосинхронизацию сцен для всех игроков
+        PhotonNetwork.AutomaticallySyncScene = true;
+        
+        // Загружаем сцену через Photon (все, кто в комнате, перейдут вместе)
+        if (!string.IsNullOrEmpty(nextSceneName))
+        {
+            PhotonNetwork.LoadLevel(nextSceneName);
+        }
+        else
+        {
+            Debug.LogError("❌ Имя следующей сцены не указано в инспекторе!");
         }
     }
 

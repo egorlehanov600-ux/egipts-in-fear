@@ -3726,6 +3726,7 @@ MonoBehaviour:
   playerMoveZDuration: 4
   guardFollowSpeed: 3
   guardDistanceBehind: 2
+  nextSceneName: "\u043B\u043E\u0431\u0431\u0438"
 --- !u!1 &1125701747
 GameObject:
   m_ObjectHideFlags: 0
